@@ -1,16 +1,20 @@
 import pytest
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
 
 
-@pytest.fixture(scope="module")
-def setup_module():
-    print("\nSetup: Initializing module resources")
-    yield # This yield control back the test
-    print("\nTeardown: Cleaning up module resources")
+@pytest.fixture(scope="session")
+def driver():
+    chrome_option = Options()
+    chrome_option.add_argument("--headless")
+    chrome_option.add_argument("--disable-gpu")
+    chrome_option.add_argument("--no-sandbox")
+    chrome_option.add_argument("--disable-dev-shm-usage")
 
+    service = Service(ChromeDriverManager().install())
+    driver = webdriver.Chrome(service=service, options=chrome_option)
 
-@pytest.fixture(scope="function")
-def setup_browser():
-    driver = webdriver.Chrome()
     yield driver
     driver.quit()
